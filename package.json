@@ -1,0 +1,19 @@
+{
+"name": "speedy-recovery-server",
+"version": "1.0.0",
+"description": "server for the app sspeedy-recovery",
+"main": "app.js",
+"scripts": {
+"start": "node app.js"
+},
+"repository": {
+"type": "git",
+"url": ""
+},
+"author": "Chong Yang",
+"license": "ISC",
+"bugs": {
+"url": ""
+},
+"homepage": ""
+}
