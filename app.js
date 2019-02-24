@@ -1,6 +1,9 @@
 const http = require('http');
 const port=process.env.PORT || 3000
+var fs = require('fs')
 var url = require('url')
+var mysql = require('mysql');
+var authData = JSON.parse(fs.readFileSync('./auth_folder/azure_auth.json', 'utf8'))[0];
 
 // const server = http.createServer((req, res) => {
 // res.statusCode = 200;
