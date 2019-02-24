@@ -1,0 +1,9 @@
+[
+  {
+    "host": "speedy-recovery-db.mysql.database.azure.com",
+    "user": "speedy_recovery@speedy-recovery-db",
+    "password": "uclGOSH2019!",
+    "database": "speedy_recovery",
+    "ssl_file": "./auth_folder/BaltimoreCyberTrustRoot.crt.pem"
+  }
+]
