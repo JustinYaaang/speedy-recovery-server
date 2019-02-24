@@ -15,5 +15,8 @@
 "bugs": {
 "url": ""
 },
+"dependencies": {
+"mysql": "^2.16.0"
+},
 "homepage": ""
 }
