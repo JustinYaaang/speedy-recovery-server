@@ -2,7 +2,7 @@ const http = require('http');
 const port=process.env.PORT || 3000
 var url = require('url')
 var fs = require('fs')
-var mysql = require('mysql');
+// var mysql = require('mysql');
 
 
 // const server = http.createServer((req, res) => {
