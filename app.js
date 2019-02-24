@@ -1,9 +1,9 @@
 const http = require('http');
 const port=process.env.PORT || 3000
-var fs = require('fs')
+// var fs = require('fs')
 var url = require('url')
 var mysql = require('mysql');
-var authData = JSON.parse(fs.readFileSync('./auth_folder/azure_auth.json', 'utf8'))[0];
+// var authData = JSON.parse(fs.readFileSync('./auth_folder/azure_auth.json', 'utf8'))[0];
 
 // const server = http.createServer((req, res) => {
 // res.statusCode = 200;
@@ -65,73 +65,72 @@ var server = http.createServer(function(request, response){
     response.end()
 
   }else if(path == '/page2.html'){
-    // response.setHeader('Content-Type', 'text/javascript; charset=utf-8')
     response.writeHead(200, {
     'Content-Type': 'text/plain',
     'Access-Control-Allow-Origin' : '*',
     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
     });
 
-    var connection = mysql.createConnection({
-      host: authData.host,
-      port: 3306,
-      user: authData.user,
-      password: authData.password,
-      database: authData.database,
-      ssl: fs.readFileSync(authData.ssl_file),
-      insecureAuth: true
-    });
+    // var connection = mysql.createConnection({
+    //   host: authData.host,
+    //   port: 3306,
+    //   user: authData.user,
+    //   password: authData.password,
+    //   database: authData.database,
+    //   ssl: fs.readFileSync(authData.ssl_file),
+    //   insecureAuth: true
+    // });
 
-    connection.connect(function(err) {
-      if (err){
-        console.log("error when connecting")
-        console.log(err)
-      }
-      else{
-        console.log("successfully connecting")        
-      }
-    });
+    // connection.connect(function(err) {
+    //   if (err){
+    //     console.log("error when connecting")
+    //     console.log(err)
+    //   }
+    //   else{
+    //     console.log("successfully connecting")        
+    //   }
+    // });
 
-    let target_user = '\'user1\''
-    var select_sql = "SELECT * FROM messages WHERE (sender = " + target_user + " or recipient = " + target_user + ") AND NOT EXISTS (SELECT * FROM messages as M2 WHERE M2.Conversation_Id = messages.Conversation_Id AND M2.Id > messages.Id) ORDER BY time"
-    var ans = [];
+    // let target_user = '\'user1\''
+    // var select_sql = "SELECT * FROM messages WHERE (sender = " + target_user + " or recipient = " + target_user + ") AND NOT EXISTS (SELECT * FROM messages as M2 WHERE M2.Conversation_Id = messages.Conversation_Id AND M2.Id > messages.Id) ORDER BY time"
+    // var ans = [];
 
-    connection.query(select_sql, function (error, results, fields) {
-        if (error){
-            console.log("error when selecting")
-            console.log(error)
-        }
-        else{
-            console.log('The answer is: ', results);
-            for (var i = 0; i < results.length; i++){
-              var username = results[i].Sender;
-              if ("\'" + username + "\'" == target_user){
-                username = results[i].Recipient;
-              }
-              ans.push({"alt":"alt",
-                'title': username,
-                'subtitle': results[i].Message,
-                'date': results[i].time,
-                'unread': 2
-              });
+    // connection.query(select_sql, function (error, results, fields) {
+    //     if (error){
+    //         console.log("error when selecting")
+    //         console.log(error)
+    //     }
+    //     else{
+    //         console.log('The answer is: ', results);
+    //         for (var i = 0; i < results.length; i++){
+    //           var username = results[i].Sender;
+    //           if ("\'" + username + "\'" == target_user){
+    //             username = results[i].Recipient;
+    //           }
+    //           ans.push({"alt":"alt",
+    //             'title': username,
+    //             'subtitle': results[i].Message,
+    //             'date': results[i].time,
+    //             'unread': 2
+    //           });
 
-            }
-            console.log(ans);
-        }
-    });
+    //         }
+    //         console.log(ans);
+    //     }
+    // });
 
-    connection.end(function(err) {
-      if (err){
-          console.log("error when disconnectiong")
-      }
-      else{
-          console.log("successfully disconnectiong")        
-      }
-      // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
-      response.write(JSON.stringify(ans));
-      response.end()
-    });
-
+    // connection.end(function(err) {
+    //   if (err){
+    //       console.log("error when disconnectiong")
+    //   }
+    //   else{
+    //       console.log("successfully disconnectiong")        
+    //   }
+    //   // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
+    //   response.write(JSON.stringify(ans));
+    //   response.end()
+    // });
+    response.end()
     
   }else if(path == '/page3'){
     response.setHeader('Content-Type', 'text/html; charset=utf-8')
