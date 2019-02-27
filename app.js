@@ -38,6 +38,12 @@ var server = http.createServer(function(request, response){
   // GET /conversations?userId=$userId
   console.log(path.substring(path.indexOf("/"), path.indexOf("?")))
   if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/conversations"){
+    response.writeHead(200, {
+    'Content-Type': 'text/plain',
+    'Access-Control-Allow-Origin' : '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
+    });
+
     let target_user = path.substring(path.indexOf("=") + 1)
     var select_sql = "SELECT * FROM messages WHERE (sender = \'" + target_user + "\' or recipient = \'" + target_user + "\') AND NOT EXISTS (SELECT * FROM messages as M2 WHERE M2.Conversation_Id = messages.Conversation_Id AND M2.Id > messages.Id) ORDER BY time"
     var ans = [];
@@ -77,9 +83,6 @@ var server = http.createServer(function(request, response){
       response.write(JSON.stringify(ans));
       response.end()
     });
-    
-
-
 
   }else if(path == '/page1.html'){
     response.statusCode = 200;
