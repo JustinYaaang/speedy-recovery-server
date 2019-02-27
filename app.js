@@ -24,10 +24,64 @@ var server = http.createServer(function(request, response){
   var pathNoQuery = parsedUrl.pathname
   var queryObject = parsedUrl.query
   var method = request.method
-
+  var connection = mysql.createConnection({
+    host: authData.host,
+    port: 3306,
+    user: authData.user,
+    password: authData.password,
+    database: authData.database,
+    ssl: fs.readFileSync(authData.ssl_file),
+    insecureAuth: true
+  });
 
   console.log('HTTP PATH: ' + path)
-  if(path == '/page1.html'){
+  // GET /conversations?userId=$userId
+  console.log(path.substring(path.indexOf("/"), path.indexOf("?")))
+  if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/conversations"){
+    let target_user = path.substring(path.indexOf("=") + 1)
+    var select_sql = "SELECT * FROM messages WHERE (sender = \'" + target_user + "\' or recipient = \'" + target_user + "\') AND NOT EXISTS (SELECT * FROM messages as M2 WHERE M2.Conversation_Id = messages.Conversation_Id AND M2.Id > messages.Id) ORDER BY time"
+    var ans = [];
+
+    connection.query(select_sql, function (error, results, fields) {
+        if (error){
+            console.log("error when selecting")
+            console.log(error)
+        }
+        else{
+            console.log('The answer is: ', results);
+            for (var i = 0; i < results.length; i++){
+              var username = results[i].Sender;
+              if ("\'" + username + "\'" == target_user){
+                username = results[i].Recipient;
+              }
+              ans.push({"alt":"alt",
+                'title': username,
+                'subtitle': results[i].Message,
+                'date': results[i].time,
+                'unread': 2
+              });
+
+            }
+            console.log(ans);
+        }
+    });
+
+    connection.end(function(err) {
+      if (err){
+          console.log("error when disconnectiong")
+      }
+      else{
+          console.log("successfully disconnectiong")        
+      }
+      // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
+      response.write(JSON.stringify(ans));
+      response.end()
+    });
+    
+
+
+
+  }else if(path == '/page1.html'){
     response.statusCode = 200;
     response.setHeader('Content-Type', 'text/html');
     response.end('<h1>Hello World</h1>');
@@ -37,16 +91,6 @@ var server = http.createServer(function(request, response){
     'Content-Type': 'text/plain',
     'Access-Control-Allow-Origin' : '*',
     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
-    });
-
-    var connection = mysql.createConnection({
-      host: authData.host,
-      port: 3306,
-      user: authData.user,
-      password: authData.password,
-      database: authData.database,
-      ssl: fs.readFileSync(authData.ssl_file),
-      insecureAuth: true
     });
 
     connection.connect(function(err) {
