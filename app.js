@@ -37,7 +37,40 @@ var server = http.createServer(function(request, response){
   console.log('HTTP PATH: ' + path)
   // GET /conversations?userId=$userId
   console.log(path.substring(path.indexOf("/"), path.indexOf("?")))
-  if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/conversations"){
+  // practitioners?userid=$userid
+  if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/practitioners"){
+    response.writeHead(200, {
+    'Content-Type': 'text/plain',
+    'Access-Control-Allow-Origin' : '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
+    });
+
+    let target_user = path.substring(path.indexOf("=") + 1)
+    let select_sql = "SELECT * FROM practitionerextrainformation WHERE ID=" + '\'' + target_user + '\''
+    
+    connection.query(select_sql, function (error, results, fields) {
+        if (error){
+            console.log("error when selecting")
+            console.log(error)
+        }
+        response.write(JSON.stringify(results));
+
+    });
+
+    connection.end(function(err) {
+      if (err){
+          console.log("error when disconnectiong")
+      }
+      else{
+          console.log("successfully disconnectiong")        
+      }
+      // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
+      response.end()
+    });
+
+
+
+  }else if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/conversations"){
     response.writeHead(200, {
     'Content-Type': 'text/plain',
     'Access-Control-Allow-Origin' : '*',
