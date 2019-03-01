@@ -38,7 +38,50 @@ var server = http.createServer(function(request, response){
   // GET /conversations?userId=$userId
   console.log(path.substring(path.indexOf("/"), path.indexOf("?")))
   // practitioners?userid=$userid
-  if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/practitioners"){
+  if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/conversation"){
+    response.writeHead(200, {
+    'Content-Type': 'text/plain',
+    'Access-Control-Allow-Origin' : '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
+    });
+    let userid1 = '\'' + path.substring(path.indexOf("userid1=")+8, path.indexOf("&")) + '\''
+    let userid2 = '\'' + path.substring(path.indexOf("&userid2=")+9) + '\''
+    console.log(userid1)
+    console.log(userid2)
+    let select_sql1 = "(SELECT ID FROM conversations where (Recipient1_Id=" + userid1 + "and Recipient2_Id=" + userid2 + ") or (Recipient1_Id=" + userid2 + " and Recipient2_Id=" +userid1 + "))"
+    let select_sql2 = "SELECT * from messages where Conversation_Id=" + select_sql1;
+
+
+    connection.query(select_sql2, function (error, results, fields) {
+        if (error){
+            console.log("error when selecting")
+            console.log(error)
+        }
+        else{
+          // conversation_id = results[0].ID;
+          // console.log(results)
+          response.write(JSON.stringify(results));
+          // console.log(conversation_id)
+        }
+    });
+
+
+
+    connection.end(function(err) {
+      if (err){
+          console.log("error when disconnectiong")
+      }
+      else{
+          console.log("successfully disconnectiong")        
+      }
+      // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
+      response.end()
+    });
+
+
+
+
+  }else if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/practitioners"){
     response.writeHead(200, {
     'Content-Type': 'text/plain',
     'Access-Control-Allow-Origin' : '*',
