@@ -133,13 +133,10 @@ var server = http.createServer(function(request, response){
         else{
             console.log('The answer is: ', results);
             for (var i = 0; i < results.length; i++){
-              var username = results[i].Sender;
-              if ("\'" + username + "\'" == target_user || username == target_user){
-                username = results[i].Recipient;
-              }
               ans.push({"alt":"alt",
                 'Conversation_Id': results[i].Conversation_Id,
-                'title': username,
+                'userid1': results[i].Sender,
+                'userid2': results[i].Recipient,
                 'subtitle': results[i].Message,
                 'date': results[i].time,
                 'unread': 2
