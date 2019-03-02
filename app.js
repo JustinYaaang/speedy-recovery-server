@@ -137,6 +137,7 @@ var server = http.createServer(function(request, response){
                 username = results[i].Recipient;
               }
               ans.push({"alt":"alt",
+                'Conversation_Id': results[i].Conversation_Id,
                 'title': username,
                 'subtitle': results[i].Message,
                 'date': results[i].time,
