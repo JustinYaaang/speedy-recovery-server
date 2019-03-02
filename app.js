@@ -43,6 +43,7 @@ var server = http.createServer(function(request, response){
     'Content-Type': 'text/plain',
     'Access-Control-Allow-Origin' : '*',
     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
+
     });
     let userid1 = '\'' + path.substring(path.indexOf("userid1=")+8, path.indexOf("&")) + '\''
     let userid2 = '\'' + path.substring(path.indexOf("&userid2=")+9) + '\''
@@ -133,7 +134,7 @@ var server = http.createServer(function(request, response){
             console.log('The answer is: ', results);
             for (var i = 0; i < results.length; i++){
               var username = results[i].Sender;
-              if ("\'" + username + "\'" == target_user){
+              if ("\'" + username + "\'" == target_user || username == target_user){
                 username = results[i].Recipient;
               }
               ans.push({"alt":"alt",
