@@ -6,16 +6,6 @@ var mysql = require('mysql');
 var authData = JSON.parse(fs.readFileSync('./auth_folder/azure_auth.json', 'utf8'))[0];
 
 
-// const server = http.createServer((req, res) => {
-// res.statusCode = 200;
-// res.setHeader('Content-Type', 'text/html');
-// res.end('<h1>Hello World</h1>');
-// });
-// server.listen(port,() => {
-// console.log(`Server running at port `+port);
-// });
-
-
 var server = http.createServer(function(request, response){   
   var parsedUrl = url.parse(request.url, true)
   var path = request.url 
@@ -164,7 +154,8 @@ var server = http.createServer(function(request, response){
     response.writeHead(200, {
     'Content-Type': 'text/plain',
     'Access-Control-Allow-Origin' : '*',
-    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+    "Access-Control-Allow-Headers": "Content-Type,Sender,Recipient"
     });
     var headers = request.headers
 
