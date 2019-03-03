@@ -168,8 +168,8 @@ var server = http.createServer(function(request, response){
     });
     var headers = request.headers
 
-    var sender = headers.sender;
-    var recipient = headers.recipient;
+    var sender = '\'' + headers.sender + '\'';
+    var recipient = '\'' + headers.recipient + '\'';
 
     console.log(sender)
     console.log(recipient)
@@ -185,18 +185,87 @@ var server = http.createServer(function(request, response){
     request.on('end', () => {
         message = body.substring(body.indexOf(message_start_token) + message_start_token.length, body.indexOf(message_end_token));
         console.log(message);
-    });
 
-    connection.end(function(err) {
-      if (err){
-          console.log("error when disconnectiong")
-      }
-      else{
-          console.log("successfully disconnectiong")        
-      }
-      // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
-      response.write("bbb");
-      response.end()
+
+        var fetch_conversation_id = "SELECT ID from conversations where (Recipient1_Id=" + sender + " and Recipient2_Id=" + recipient + ") or (Recipient1_Id=" + recipient + " and Recipient2_Id=" + sender + ")"
+        console.log(fetch_conversation_id)
+        connection.query(fetch_conversation_id, function (error, results, fields) {
+            if (!error){
+                // console.log(results)
+                // response.write(JSON.stringify(results));
+                if (results.length){
+                console.log("has result")
+                let conversation_id = results[0].ID;
+                console.log(conversation_id);
+                let insert_message = "INSERT INTO messages (Conversation_Id, Sender, Recipient, Message) VALUES (" + conversation_id + ", " + sender + ", " + recipient + ", \'test info\');"
+                console.log(insert_message);
+                connection.query(insert_message, function (err, new_results, flds) {
+                    if (err){
+                        console.log(err)
+                    }
+                    else{
+                        response.write('success');
+                    }
+                });
+
+                connection.end(function(err) {
+                    if (err){
+                      console.log("error when disconnectiong")
+                    }
+                    else{
+                      console.log("successfully disconnectiong")        
+                    }
+                    // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
+                    response.end()
+                });
+
+
+              }
+              else{
+                console.log("no result")
+                let insert_conversation_sql = "INSERT INTO conversations (Recipient1_Id, Recipient2_Id) VALUES (" + sender + ", " + recipient + ")";
+                console.log(insert_conversation_sql);
+
+                connection.query(insert_conversation_sql, function (err, new_results, flds) {
+                    if (err){
+                        console.log(err)
+                    }
+                    else{
+                        console.log(new_results);                        
+                        let conversation_id = new_results.insertId;
+                        console.log(conversation_id);
+                        let insert_message = "INSERT INTO messages (Conversation_Id, Sender, Recipient, Message) VALUES (" + conversation_id + ", " + sender + ", " + recipient + ", \'test info\');"
+                        console.log(insert_message);
+                        connection.query(insert_message, function (errs, new_result, fld) {
+                            if (err){
+                                console.log(err)
+                            }
+                            else{
+                                response.write('success');
+                            }
+                        });
+
+                        connection.end(function(err) {
+                            if (err){
+                              console.log("error when disconnectiong")
+                            }
+                            else{
+                              console.log("successfully disconnectiong")        
+                            }
+                            // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
+                            response.end()
+                        });
+
+                    }
+                });
+
+              }
+            }
+        });
+
+
+        
+
     });
 
   }else if(path == '/page1.html'){
