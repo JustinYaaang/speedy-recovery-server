@@ -40,7 +40,7 @@ var server = http.createServer(function(request, response){
   // GET /conversations?userId=$userId
   console.log(path.substring(path.indexOf("/"), path.indexOf("?")))
   // practitioners?userid=$userid
-  if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/messages"){
+  if (path.substring(path.indexOf("/") == "/messages/")){
     console.log("aaa")
     response.writeHead(200, {
     'Content-Type': 'text/plain',
