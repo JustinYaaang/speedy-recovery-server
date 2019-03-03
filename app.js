@@ -225,7 +225,7 @@ var server = http.createServer(function(request, response){
                         console.log(new_results);                        
                         let conversation_id = new_results.insertId;
                         console.log(conversation_id);
-                        let insert_message = "INSERT INTO messages (Conversation_Id, Sender, Recipient, Message) VALUES (" + conversation_id + ", " + sender + ", " + recipient + ", \'test info\');"
+                        let insert_message = "INSERT INTO messages (Conversation_Id, Sender, Recipient, Message) VALUES (" + conversation_id + ", " + sender + ", " + recipient + ", " + message + ");"
                         console.log(insert_message);
                         connection.query(insert_message, function (errs, new_result, fld) {
                             if (err){
