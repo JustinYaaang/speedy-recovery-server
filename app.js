@@ -4,7 +4,7 @@ var url = require('url')
 var fs = require('fs')
 var mysql = require('mysql');
 var authData = JSON.parse(fs.readFileSync('./auth_folder/azure_auth.json', 'utf8'))[0];
-var request = require('request');
+
 
 // const server = http.createServer((req, res) => {
 // res.statusCode = 200;
@@ -14,8 +14,7 @@ var request = require('request');
 // server.listen(port,() => {
 // console.log(`Server running at port `+port);
 // });
-let message_start_token = "<message_start>";
-let message_end_token = "<message_end>";
+
 
 var server = http.createServer(function(request, response){   
   var parsedUrl = url.parse(request.url, true)
@@ -25,7 +24,6 @@ var server = http.createServer(function(request, response){
   var pathNoQuery = parsedUrl.pathname
   var queryObject = parsedUrl.query
   var method = request.method
-  var headers = request.headers
   var connection = mysql.createConnection({
     host: authData.host,
     port: 3306,
@@ -40,41 +38,7 @@ var server = http.createServer(function(request, response){
   // GET /conversations?userId=$userId
   console.log(path.substring(path.indexOf("/"), path.indexOf("?")))
   // practitioners?userid=$userid
-  if (path.substring(path.indexOf("/")) == "/messages/"){
-    console.log("aaa")
-    response.writeHead(200, {
-    'Content-Type': 'text/plain',
-    'Access-Control-Allow-Origin' : '*',
-    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
-    });
-    let sender = headers.sender;
-    let recipient = headers.recipient;
-
-    console.log(sender)
-    console.log(recipient)
-    var body = '';
-    request.on('data', chunk => {
-        body += chunk.toString(); // convert Buffer to string
-    });
-    request.on('end', () => {
-        let message = body.substring(body.indexOf(message_start_token) + message_start_token.length, body.indexOf(message_end_token));
-        console.log(message);
-    });
-
-
-    connection.end(function(err) {
-      if (err){
-          console.log("error when disconnectiong")
-      }
-      else{
-          console.log("successfully disconnectiong")        
-      }
-      response.write("aaa");
-      response.end()
-    });
-
-  
-  }else if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/conversation"){
+  if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/conversation"){
     response.writeHead(200, {
     'Content-Type': 'text/plain',
     'Access-Control-Allow-Origin' : '*',
