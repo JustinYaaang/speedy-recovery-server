@@ -174,7 +174,7 @@ var server = http.createServer(function(request, response){
         body += chunk.toString(); // convert Buffer to string
     });
     request.on('end', () => {
-        message = body.substring(body.indexOf(message_start_token) + message_start_token.length, body.indexOf(message_end_token));
+        message = '\'' + body.substring(body.indexOf(message_start_token) + message_start_token.length, body.indexOf(message_end_token)) + '\'';
         console.log(message);
 
 
