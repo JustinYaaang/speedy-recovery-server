@@ -159,6 +159,46 @@ var server = http.createServer(function(request, response){
       response.end()
     });
 
+  }else if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/messages"){
+    console.log("aaa")
+    response.writeHead(200, {
+    'Content-Type': 'text/plain',
+    'Access-Control-Allow-Origin' : '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
+    });
+    var headers = request.headers
+
+    var sender = headers.sender;
+    var recipient = headers.recipient;
+
+    console.log(sender)
+    console.log(recipient)
+
+    var body = '';
+    var message = '';
+    let message_start_token = "<message_start>";
+    let message_end_token = "<message_end>";
+
+    request.on('data', chunk => {
+        body += chunk.toString(); // convert Buffer to string
+    });
+    request.on('end', () => {
+        message = body.substring(body.indexOf(message_start_token) + message_start_token.length, body.indexOf(message_end_token));
+        console.log(message);
+    });
+
+    connection.end(function(err) {
+      if (err){
+          console.log("error when disconnectiong")
+      }
+      else{
+          console.log("successfully disconnectiong")        
+      }
+      // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
+      response.write("bbb");
+      response.end()
+    });
+
   }else if(path == '/page1.html'){
     response.statusCode = 200;
     response.setHeader('Content-Type', 'text/html');
