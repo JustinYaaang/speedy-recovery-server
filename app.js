@@ -87,7 +87,10 @@ var server = http.createServer(function(request, response){
             console.log("error when selecting")
             console.log(error)
         }
-        response.write(JSON.stringify(results));
+        let ans = [{"id": results[0].ID, "favouriteFootballTeam": results[0].FavouriteFootballTeam, "hometown": results[0].Hometown, "favouriteFood": results[0].FavouriteFood, "favouriteAnimal": results[0].FavouriteAnimal}]
+        console.log(ans);
+        
+        response.write(JSON.stringify(ans));
 
     });
 
