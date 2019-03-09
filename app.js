@@ -115,42 +115,67 @@ var server = http.createServer(function(request, response){
     });
 
     let target_user = path.substring(path.indexOf("=") + 1)
+    var select_sql_unread = "SELECT * from conversations WHERE (Recipient1_Id=\'" + target_user + "\' or Recipient2_Id=\'" + target_user + "\')"
     var select_sql = "SELECT * FROM messages WHERE (sender = \'" + target_user + "\' or recipient = \'" + target_user + "\') AND NOT EXISTS (SELECT * FROM messages as M2 WHERE M2.Conversation_Id = messages.Conversation_Id AND M2.Id > messages.Id) ORDER BY time"
     var ans = [];
 
-    connection.query(select_sql, function (error, results, fields) {
-        if (error){
-            console.log("error when selecting")
-            console.log(error)
+
+    connection.query(select_sql_unread, function (err, res, flds) {
+      if (!err){
+        console.log(res)
+        dict = []
+        for (var j = 0; j < res.length; j++){
+          dict[res[j].ID] = [res[j].Recipient1_Id, res[j].Recipient2_Id, res[j].unread1, res[j].unread2]
+        }
+        connection.query(select_sql, function (error, results, fields) {
+            if (error){
+                console.log("error when selecting")
+                console.log(error)
+            }
+            else{
+                console.log('The answer is: ', results);
+                for (var i = 0; i < results.length; i++){
+                  unread = 0;
+                  if (dict[results[i].Conversation_Id][0] == target_user && dict[results[i].Conversation_Id][2]){
+                    unread = dict[results[i].Conversation_Id][2];
+                  }
+                  else if (dict[results[i].Conversation_Id][1] == target_user && dict[results[i].Conversation_Id][3]){
+                    unread = dict[results[i].Conversation_Id][3];
+                  }
+                  ans.push({"alt":"alt",
+                    'Conversation_Id': results[i].Conversation_Id,
+                    'userid1': results[i].Sender,
+                    'userid2': results[i].Recipient,
+                    'subtitle': results[i].Message,
+                    'date': results[i].time,
+                    'unread': unread
+                  });
+
+                }
+                // console.log(ans);
+            }
+        });
+
+      }
+
+      connection.end(function(err) {
+        if (err){
+            console.log("error when disconnectiong")
         }
         else{
-            console.log('The answer is: ', results);
-            for (var i = 0; i < results.length; i++){
-              ans.push({"alt":"alt",
-                'Conversation_Id': results[i].Conversation_Id,
-                'userid1': results[i].Sender,
-                'userid2': results[i].Recipient,
-                'subtitle': results[i].Message,
-                'date': results[i].time,
-                'unread': 2
-              });
-
-            }
-            console.log(ans);
+            console.log("successfully disconnectiong")        
         }
+        // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
+        response.write(JSON.stringify(ans));
+        response.end()
+      });
+
     });
 
-    connection.end(function(err) {
-      if (err){
-          console.log("error when disconnectiong")
-      }
-      else{
-          console.log("successfully disconnectiong")        
-      }
-      // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
-      response.write(JSON.stringify(ans));
-      response.end()
-    });
+
+
+
+    
 
   }else if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/messages"){
     console.log("aaa")
