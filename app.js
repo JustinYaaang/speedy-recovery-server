@@ -35,11 +35,12 @@ var server = http.createServer(function(request, response){
     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
 
     });
-    let userid1 = '\'' + path.substring(path.indexOf("userid1=")+8, path.indexOf("&")) + '\''
-    let userid2 = '\'' + path.substring(path.indexOf("&userid2=")+9) + '\''
+    let userid1 = path.substring(path.indexOf("userid1=")+8, path.indexOf("&"))
+    let userid2 = path.substring(path.indexOf("&userid2=")+9)
+
     console.log(userid1)
     console.log(userid2)
-    let select_sql1 = "(SELECT ID FROM conversations where (Recipient1_Id=" + userid1 + "and Recipient2_Id=" + userid2 + ") or (Recipient1_Id=" + userid2 + " and Recipient2_Id=" +userid1 + "))"
+    let select_sql1 = "(SELECT ID FROM conversations where (Recipient1_Id=\'" + userid1 + "\'and Recipient2_Id=\'" + userid2 + "\') or (Recipient1_Id=\'" + userid2 + "\' and Recipient2_Id=\'" +userid1 + "\'))"
     let select_sql2 = "SELECT * from messages where Conversation_Id=" + select_sql1;
 
 
@@ -49,25 +50,49 @@ var server = http.createServer(function(request, response){
             console.log(error)
         }
         else{
-          // conversation_id = results[0].ID;
-          // console.log(results)
+          conversation_id = results[0].Conversation_Id;
+          console.log(conversation_id)
           response.write(JSON.stringify(results));
-          // console.log(conversation_id)
+          let update_unread_sql = "SELECT * from conversations where (Recipient1_Id=\'" + userid1 + "\' and Recipient2_Id=\'" + userid2 + "\') or (Recipient1_Id=\'" + userid2 + "\' and Recipient2_Id=\'" + userid1 + "\')"
+          // console.log(update_unread_sql)
+
+          connection.query(update_unread_sql, function (err, res, fld) {
+            if (!err){
+              Recipient1_Id = res[0].Recipient1_Id;
+              Recipient2_Id = res[0].Recipient2_Id;
+              console.log(Recipient1_Id);
+              console.log(Recipient2_Id);
+              var unread = 'unread1';
+              if (Recipient2_Id == userid1){
+                unread = 'unread2';
+              }
+
+              let update_sql = "UPDATE conversations SET " + unread + " = 0 where ID="+ conversation_id + ";"
+              console.log(update_sql);
+              connection.query(update_sql, function (e, r, f) {
+
+              });
+
+              connection.end(function(err) {
+                if (err){
+                    console.log("error when disconnectiong")
+                }
+                else{
+                    console.log("successfully disconnectiong")        
+                }
+                // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
+                response.end()
+              });
+            }
+
+          });
+
         }
+
+        
+
     });
 
-
-
-    connection.end(function(err) {
-      if (err){
-          console.log("error when disconnectiong")
-      }
-      else{
-          console.log("successfully disconnectiong")        
-      }
-      // response.write(fs.readFileSync("./test_files/conversations.json", 'utf8'));
-      response.end()
-    });
 
 
 
