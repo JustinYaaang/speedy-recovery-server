@@ -212,8 +212,8 @@ var server = http.createServer(function(request, response){
     });
     var headers = request.headers
 
-    var sender = '\'' + headers.sender + '\'';
-    var recipient = '\'' + headers.recipient + '\'';
+    var sender = headers.sender;
+    var recipient = headers.recipient;
 
     console.log(sender)
     console.log(recipient)
@@ -231,24 +231,41 @@ var server = http.createServer(function(request, response){
         console.log(message);
 
 
-        var fetch_conversation_id = "SELECT ID from conversations where (Recipient1_Id=" + sender + " and Recipient2_Id=" + recipient + ") or (Recipient1_Id=" + recipient + " and Recipient2_Id=" + sender + ")"
+        var fetch_conversation_id = "SELECT * from conversations where (Recipient1_Id=\'" + sender + "\' and Recipient2_Id=\'" + recipient + "\') or (Recipient1_Id=\'" + recipient + "\' and Recipient2_Id=\'" + sender + "\')"
         console.log(fetch_conversation_id)
         connection.query(fetch_conversation_id, function (error, results, fields) {
             if (!error){
                 // console.log(results)
                 // response.write(JSON.stringify(results));
                 if (results.length){
-                console.log("has result")
                 let conversation_id = results[0].ID;
-                console.log(conversation_id);
-                let insert_message = "INSERT INTO messages (Conversation_Id, Sender, Recipient, Message) VALUES (" + conversation_id + ", " + sender + ", " + recipient + ", " + message + ");"
-                console.log(insert_message);
+                
+                let insert_message = "INSERT INTO messages (Conversation_Id, Sender, Recipient, Message) VALUES (" + conversation_id + ", \'" + sender + "\', \'" + recipient + "\', " + message + ");"
                 connection.query(insert_message, function (err, new_results, flds) {
                     if (err){
                         console.log(err)
                     }
                     else{
                         response.write('success');
+                    }
+                });
+
+
+
+                let user1 = results[0].Recipient1_Id;
+                let user2 = results[0].Recipient2_Id;
+                var unread = 'unread2';
+                if (sender == user1 && recipient == user2){
+                  unread = 'unread1';
+                }
+                let update_sql = "UPDATE conversations SET " + unread + " = " + unread + " + 1 WHERE ID = " + conversation_id;
+                console.log(update_sql);                
+                connection.query(update_sql, function (e, r, f) {
+                    if (e){
+                      console.log("ee");
+                    }
+                    else{
+                      console.log("ss");
                     }
                 });
 
@@ -267,7 +284,7 @@ var server = http.createServer(function(request, response){
               }
               else{
                 console.log("no result")
-                let insert_conversation_sql = "INSERT INTO conversations (Recipient1_Id, Recipient2_Id) VALUES (" + sender + ", " + recipient + ")";
+                let insert_conversation_sql = "INSERT INTO conversations (Recipient1_Id, Recipient2_Id, unread1, unread2) VALUES (\'" + sender + "\', \'" + recipient + "\', 1, 0)";
                 console.log(insert_conversation_sql);
 
                 connection.query(insert_conversation_sql, function (err, new_results, flds) {
