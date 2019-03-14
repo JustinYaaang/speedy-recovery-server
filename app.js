@@ -167,6 +167,8 @@ var server = http.createServer(function(request, response){
                   else if (dict[results[i].Conversation_Id][1] == target_user && dict[results[i].Conversation_Id][3]){
                     unread = dict[results[i].Conversation_Id][3];
                   }
+                  console.log("unread")
+                  console.log(unread)
                   ans.push({"alt":"alt",
                     'Conversation_Id': results[i].Conversation_Id,
                     'userid1': results[i].Sender,
@@ -177,7 +179,7 @@ var server = http.createServer(function(request, response){
                   });
 
                 }
-                // console.log(ans);
+                console.log(ans);
             }
         });
 
@@ -203,7 +205,6 @@ var server = http.createServer(function(request, response){
     
 
   }else if (path.substring(path.indexOf("/"), path.indexOf("?")) == "/messages"){
-    console.log("aaa")
     response.writeHead(200, {
     'Content-Type': 'text/plain',
     'Access-Control-Allow-Origin' : '*',
@@ -254,9 +255,9 @@ var server = http.createServer(function(request, response){
 
                 let user1 = results[0].Recipient1_Id;
                 let user2 = results[0].Recipient2_Id;
-                var unread = 'unread2';
+                var unread = 'unread1';
                 if (sender == user1 && recipient == user2){
-                  unread = 'unread1';
+                  unread = 'unread2';
                 }
                 let update_sql = "UPDATE conversations SET " + unread + " = " + unread + " + 1 WHERE ID = " + conversation_id;
                 console.log(update_sql);                
@@ -321,6 +322,9 @@ var server = http.createServer(function(request, response){
                 });
 
               }
+            }
+            else{
+              console.log(error);
             }
         });
 
